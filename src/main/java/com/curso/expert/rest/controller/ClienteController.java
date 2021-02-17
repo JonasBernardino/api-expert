@@ -1,8 +1,11 @@
 package com.curso.expert.rest.controller;
 
 import com.curso.expert.domain.entity.Cliente;
+import com.curso.expert.domain.repositorio.ClientesRepository;
 import com.curso.expert.rest.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -16,6 +19,9 @@ public class ClienteController {
 
     @Autowired
     private ClienteService clienteService;
+
+    @Autowired
+    ClientesRepository clientesRepository;
 
     @GetMapping
     public ResponseEntity<List<Cliente>> findAll(){
@@ -48,15 +54,18 @@ public class ClienteController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping
-    public ResponseEntity<List<Cliente>> findByName(@RequestBody Cliente filter){
-        List<Cliente> obj = clienteService.findByName(filter);
-        return ResponseEntity.ok().body(obj);
+    @GetMapping("/busca")
+    public ResponseEntity find( Cliente filtro ){
+        ExampleMatcher matcher = ExampleMatcher
+                .matching()
+                .withIgnoreCase()
+                .withStringMatcher(
+                        ExampleMatcher.StringMatcher.CONTAINING );
+
+        Example example = Example.of(filtro, matcher);
+        List<Cliente> lista = clientesRepository.findAll(example);
+        return ResponseEntity.ok(lista);
     }
-
-
-
-
 
 
 }
