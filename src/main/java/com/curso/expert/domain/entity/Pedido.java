@@ -12,9 +12,6 @@ public class Pedido {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @ManyToOne
-    private Cliente cliente;
-
     private LocalDate dataPedido;
 
     @Column(precision = 2)
@@ -22,6 +19,9 @@ public class Pedido {
 
     @OneToMany
     private Set<Item_pedido> itens_pedido;
+
+    @ManyToOne
+    private Cliente cliente;
 
 
     public Set<Item_pedido> getItens_pedido() {
