@@ -1,7 +1,7 @@
 package com.curso.expert.domain.repositorio;
 
-import com.curso.expert.domain.entity.Item_pedido;
+import com.curso.expert.domain.entity.ItemPedido;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface Item_pedidoRepository extends JpaRepository<Item_pedido, Integer> {
+public interface Item_pedidoRepository extends JpaRepository<ItemPedido, Integer> {
 }
