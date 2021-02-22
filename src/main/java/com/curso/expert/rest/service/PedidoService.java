@@ -4,21 +4,22 @@ import com.curso.expert.domain.entity.Cliente;
 import com.curso.expert.domain.entity.ItemPedido;
 import com.curso.expert.domain.entity.Pedido;
 import com.curso.expert.domain.entity.Produto;
+import com.curso.expert.domain.enums.StatusPedido;
 import com.curso.expert.domain.repositorio.ClientesRepository;
 import com.curso.expert.domain.repositorio.Item_pedidoRepository;
 import com.curso.expert.domain.repositorio.PedidoRepository;
 import com.curso.expert.domain.repositorio.ProdutoRepository;
 import com.curso.expert.exception.RegraNegocioException;
+import com.curso.expert.exception.PedidoNaoEncontradoException;
 import com.curso.expert.rest.dto.ItemPedidoDTO;
 import com.curso.expert.rest.dto.PedidoDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,6 +43,7 @@ public class PedidoService {
         pedido.setTotal(dto.getTotal());
         pedido.setDataPedido(LocalDate.now());
         pedido.setCliente(cliente);
+        pedido.setStatus(StatusPedido.REALIZADO);
 
         List<ItemPedido> itemsPedido = converterItems(pedido, dto.getItems());
         repository.save(pedido);
@@ -74,4 +76,18 @@ public class PedidoService {
                 }).collect(Collectors.toList());
 
     }
+
+
+    public Optional<Pedido> obterPedidoCompleto(Integer id){
+        return repository.findByIdFetchItens(id);
+    }
+
+    @Transactional
+    public void atualizaStatus(Integer id, StatusPedido statusPedido){
+        repository.findById(id).map(pedido -> {
+            pedido.setStatus(statusPedido);
+            return repository.save(pedido);
+        }).orElseThrow(() -> new PedidoNaoEncontradoException());
+    }
+
 }

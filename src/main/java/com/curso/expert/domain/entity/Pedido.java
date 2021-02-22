@@ -1,5 +1,6 @@
 package com.curso.expert.domain.entity;
 
+import com.curso.expert.domain.enums.StatusPedido;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,8 +12,8 @@ import java.util.List;
 import java.util.Set;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class Pedido {
 
@@ -28,9 +29,10 @@ public class Pedido {
     @Column(precision = 2)
     private BigDecimal total;
 
-    @OneToMany
-    private Set<ItemPedido> itensPedido;
+    @Enumerated(EnumType.STRING)
+    private StatusPedido status;
 
-    public void setItens(List<ItemPedido> itemsPedido) {
-    }
+    @OneToMany
+    private List<ItemPedido> itens;
+
 }
