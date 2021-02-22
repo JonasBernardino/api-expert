@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -37,13 +38,14 @@ public class ProdutoController {
     }
 
     @PostMapping
-    public ResponseEntity<Produto> create(@RequestBody Produto obj){
+    public ResponseEntity<Produto> create(@RequestBody @Valid Produto obj){
         obj = produtoService.create(obj);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
         return ResponseEntity.created(uri).body(obj);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<Produto> update(@PathVariable Integer id, @RequestBody Produto obj){
+    public ResponseEntity<Produto> update(@PathVariable Integer id,
+                                          @RequestBody @Valid Produto obj){
         Produto newObj = produtoService.update(id,obj);
         return ResponseEntity.ok().body(newObj);
     }

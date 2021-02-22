@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -36,14 +37,14 @@ public class ClienteController {
     }
 
     @PostMapping
-    public ResponseEntity<Cliente> create(@RequestBody Cliente obj){
+    public ResponseEntity<Cliente> create(@RequestBody @Valid Cliente obj){
         obj = clienteService.create(obj);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
         return ResponseEntity.created(uri).body(obj);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> update(@PathVariable Integer id, @RequestBody Cliente obj){
+    public ResponseEntity<Cliente> update(@PathVariable Integer id, @RequestBody @Valid Cliente obj){
         Cliente newObj = clienteService.update(id,obj);
         return ResponseEntity.ok().body(newObj);
     }
