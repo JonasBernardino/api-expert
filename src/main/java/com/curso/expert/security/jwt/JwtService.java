@@ -1,6 +1,9 @@
-package com.curso.expert;
+package com.curso.expert.security.jwt;
 
+import com.curso.expert.ExpertApplication;
 import com.curso.expert.domain.entity.Usuario;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,11 +36,42 @@ public class JwtService {
                 .compact();
     }
 
+    private Claims obterClaims (String token) throws ExpiredJwtException {
+        return Jwts
+                .parser()
+                .setSigningKey(chaveAssinatura)
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public boolean tokenValido (String token){
+        try{
+            Claims claims = obterClaims(token);
+            Date dataExpiracao = claims.getExpiration();
+            LocalDateTime data =
+                    dataExpiracao.toInstant()
+                            .atZone(ZoneId.systemDefault()).toLocalDateTime();
+            return !LocalDateTime.now().isAfter(data);
+        }catch (Exception e){
+            return false;
+        }
+    }
+
+    public String obterLoginUsuario(String token)throws ExpiredJwtException{
+        return (String) obterClaims(token).getSubject();
+
+    }
+
+
     public static void main(String [] args){
         ConfigurableApplicationContext context = SpringApplication.run(ExpertApplication.class);
         JwtService service = context.getBean(JwtService.class);
         Usuario usuario = Usuario.builder().login("fulano").build();
         String token = service.gerarToken(usuario);
         System.out.println(token);
+
+        boolean isTokenValido = service.tokenValido(token);
+        System.out.println("O token está vaálido? "+isTokenValido);
+        System.out.println(service.obterLoginUsuario(token));
     }
 }
